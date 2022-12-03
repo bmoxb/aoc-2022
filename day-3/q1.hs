@@ -14,10 +14,8 @@ collectRucksacks s =
 
 identifyCommonItem :: Rucksack -> Char
 identifyCommonItem (left, right) =
-    search right
-    where set = fromList left
-          search (x:xs) = if member x set then x else search xs
-          search [] = '\0'
+    head (toList set)
+    where set = intersection (fromList left) (fromList right)
 
 itemToPriority :: Char -> Int
 itemToPriority c

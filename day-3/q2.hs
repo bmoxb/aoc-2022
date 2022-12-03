@@ -13,7 +13,7 @@ collectGroups :: Int -> String -> [Group]
 collectGroups size s =
     collect (lines s)
     where collect ls
-              | length ls > 3 = [(take size ls)] ++ (collect (drop size ls))
+              | length ls > 3 = (take size ls):(collect (drop size ls))
               | otherwise = [ls]
 
 identifyBadgeItem :: Group -> Char
