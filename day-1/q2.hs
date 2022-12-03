@@ -1,4 +1,4 @@
-import Data.Heap
+import qualified Data.Heap as Heap
 
 main = do
     s <- readFile "input.txt"
@@ -6,13 +6,13 @@ main = do
 
 topThree :: String -> [Int]
 topThree s =
-    Data.Heap.take 3 heap 
-    where heap = mostCalories (lines s) 0 empty
+    Heap.take 3 heap
+    where heap = orderedCalories (lines s) 0 Heap.empty
 
-mostCalories :: [String] -> Int -> MaxHeap Int -> MaxHeap Int
+orderedCalories :: [String] -> Int -> Heap.MaxHeap Int -> Heap.MaxHeap Int
 
-mostCalories (x:xs) currentSum results =
-    case x of "" -> mostCalories xs 0 (insert currentSum results)
-              val -> mostCalories xs (currentSum + (read val)) results
+orderedCalories (x:xs) currentSum results =
+    case x of "" -> orderedCalories xs 0 (Heap.insert currentSum results)
+              val -> orderedCalories xs (currentSum + (read val)) results
 
-mostCalories [] currentSum results = insert currentSum results
+orderedCalories [] currentSum results = Heap.insert currentSum results

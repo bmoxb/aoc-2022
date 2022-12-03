@@ -1,39 +1,39 @@
 main = do
     s <- readFile "input.txt"
-    print (calculateTotalScore s)
+    print (sum (evalGuide (makeGuide s)))
 
-calculateTotalScore :: String -> Int
-calculateTotalScore s =
-    sum scores
-    where pairs = identifyPairs (lines s)
-          scores = [finalScoreFromPair p | p <- pairs]
-
-identifyPairs :: [String] -> [(Move, Move)]
-identifyPairs (x:xs) = [identifyPair x] ++ (identifyPairs xs)
-identifyPairs [] = []
-
-identifyPair :: String -> (Move, Move)
-identifyPair s = (moveFromChar (s !! 0), moveFromChar (s !! 2))
+type StrategyGuide = [(Move, Move)]
 
 data Move = Rock | Paper | Scissors deriving (Eq)
 
-moveFromChar :: Char -> Move
-moveFromChar c
+evalGuide :: StrategyGuide -> [Int]
+evalGuide guide = [movePairFinalScore pair | pair <- guide]
+
+makeGuide :: String -> StrategyGuide
+makeGuide s =
+    [lineToMovePair line | line <- (lines s)]
+    where lineToMovePair line = (charToMove (line !! 0), charToMove (line !! 2))
+
+charToMove :: Char -> Move
+charToMove c
     | elem c "AX" = Rock
     | elem c "BY" = Paper
     | elem c "CZ" = Scissors
 
-scoreFromMove :: Move -> Int
-scoreFromMove m = case m of Rock -> 1
-                            Paper -> 2
-                            Scissors -> 3
+movePairFinalScore :: (Move, Move) -> Int
+movePairFinalScore pair =
+    (individualMoveScore (snd pair)) + (movePairPlayScore pair)
 
-finalScoreFromPair :: (Move, Move) -> Int
-finalScoreFromPair (l, r) = (scoreFromMove r) + (outcomeScoreFromPair (l, r))
-
-outcomeScoreFromPair :: (Move, Move) -> Int
-outcomeScoreFromPair (l, r)
+movePairPlayScore :: (Move, Move) -> Int
+movePairPlayScore (l, r)
     | elem (l, r) winningPairs = 6
     | l == r                   = 3
     | otherwise                = 0
     where winningPairs = [(Rock, Paper), (Paper, Scissors), (Scissors, Rock)]
+
+individualMoveScore :: Move -> Int
+individualMoveScore m =
+    case m of Rock -> 1
+              Paper -> 2
+              Scissors -> 3
+
